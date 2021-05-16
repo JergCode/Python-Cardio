@@ -1,11 +1,12 @@
 import random
 from helpers.print_screen import print_framed_message
-from options import OPTIONS
+from options import OPTIONS, parse_option
+
 
 def select_option():
     print('Selecciona una de las opciónes: \n')
     for option in OPTIONS:
-        print(f'{option.value} : {option.name}'.ljust(20))
+        print(f'{option.get_option()} : {option.name}'.ljust(20))
     print()
 
 
@@ -31,6 +32,8 @@ def play(games_to_win, max_games, against_computer=False):
             p2_wins += 1
             games += 1
 
+    input()
+
     if p1_wins > p2_wins:
         return 1
     elif not against_computer:
@@ -38,31 +41,21 @@ def play(games_to_win, max_games, against_computer=False):
     else:
         return 3
 
+
 def _compute_winner(p1_option, p2_option, against_computer):
     if p1_option == p2_option:
-        print(f'\nJuagdor 1:({p1_option.name}) no le gana a Juagdor 2:({p2_option.name})\n')
+        print(f'\nJuagdor 1:({p1_option.name}) no le gana a {"Computadora" if against_computer else "Jugador 2"}:({p2_option.name})\n')
         return 0
-    if p1_option is OPTIONS.PIEDRA and p2_option is OPTIONS.PAPEL:
-        _print_winner_of_game(2, player_1_won=False, against_computer=against_computer)
-        return 1
-    if p1_option is OPTIONS.PIEDRA and p2_option is OPTIONS.TIJERA:
-        _print_winner_of_game(1, player_1_won=True, against_computer=against_computer)
+    if p1_option.wins_against_options(p2_option):
+        _print_winner_of_game(p1_option, player_1_won=True, against_computer=against_computer)
         return -1
-    if p1_option is OPTIONS.PAPEL and p2_option is OPTIONS.PIEDRA:
-        _print_winner_of_game(2, player_1_won=True, against_computer=against_computer)
-        return -1
-    if p1_option is OPTIONS.PAPEL and p2_option is OPTIONS.TIJERA:
-        _print_winner_of_game(3, player_1_won=False, against_computer=against_computer)
-        return 1
-    if p1_option is OPTIONS.TIJERA and p2_option is OPTIONS.PIEDRA:
-        _print_winner_of_game(3, player_1_won=True, against_computer=against_computer)
-        return -1
-    if p1_option is OPTIONS.TIJERA and p2_option is OPTIONS.PAPEL:
-        _print_winner_of_game(2, player_1_won=False, against_computer=against_computer)
+    else:
+        _print_winner_of_game(p2_option, player_1_won=False, against_computer=against_computer)
         return 1
 
 
 def _print_winner_of_game(winning_option, player_1_won, against_computer):
+    option = winning_option.value[0]
     if player_1_won:
         winner = 'Jugador 1'
         loser = 'Computadora' if against_computer else 'Jugador 2'
@@ -71,12 +64,11 @@ def _print_winner_of_game(winning_option, player_1_won, against_computer):
         winner = 'Computadora' if against_computer else 'Jugador 2'
 
     messages = dict({
-        1: f'PIEDRA({winner}) destruye a TIJERAS({loser})',
-        2: f'PAPEL({winner}) envuelve a PIEDRA({loser})',
-        3: f'TIJERA ({winner}) corta a PAPEL({loser})',
+        1: f'\nPIEDRA({winner}) destruye a TIJERAS({loser})\n',
+        2: f'\nPAPEL({winner}) envuelve a PIEDRA({loser})\n',
+        3: f'\nTIJERA ({winner}) corta a PAPEL({loser})\n',
     })
-
-    print(messages.get(winning_option))
+    print(messages.get(option))
 
 
 def ask_for_option(message, max_options):
@@ -89,10 +81,10 @@ def ask_for_option(message, max_options):
 
 
 def ask_for_players_option(against_computer):
-    p1_option = OPTIONS(ask_for_option('Opción del Jugador 1', 3))
+    p1_option = parse_option(ask_for_option('Opción del Jugador 1', 3))
     if not against_computer:
-        p2_option = OPTIONS(ask_for_option('Opción del Jugador 2', 3))
+        p2_option = parse_option(ask_for_option('Opción del Jugador 2', 3))
         print()
     else:
-        p2_option = OPTIONS(random.randint(1, 3))
+        p2_option = parse_option(random.randint(1, 3))
     return p1_option, p2_option

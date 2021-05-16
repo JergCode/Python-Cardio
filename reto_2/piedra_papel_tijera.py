@@ -12,7 +12,7 @@ def welcome_screen():
 
 def quantity_of_plays_option():
     score_to_win = ask_for_option('Cuantos puntos se necesitan para ganar (1, 2 ... 5)', 5)
-    max_games = score_to_win * 2 + 1
+    max_games = score_to_win * 2 - 1
     return score_to_win, max_games
 
 
@@ -25,22 +25,20 @@ def play_against_computer():
             return False
 
 
-def show_winner(winner=None):
-    print(winner)
-    clear_screen()
-    if winner:
-        tprint('FELICIDADES', 'modular')
-        print_framed_message((winner + ' es el ganador del juego', ), 125)
-    else:
-        tprint('BUEN INTENTO', 'stop')
-        print_framed_message(('La computadora ha ganado este juego', ), 125)
-
-
 def print_winner(winner):
+    def _show_winner(name=None):
+        clear_screen()
+        if name:
+            tprint('FELICIDADES', 'modular')
+            print_framed_message((name + ' es el ganador del juego',), 125)
+        else:
+            tprint('BUEN INTENTO', 'stop')
+            print_framed_message(('La computadora ha ganado este juego',), 125)
+
     switch_case = {
-        1: lambda: show_winner('Jugador 1'),
-        2: lambda: show_winner('Jugador 2'),
-        3: lambda: show_winner()
+        1: lambda: _show_winner('Jugador 1'),
+        2: lambda: _show_winner('Jugador 2'),
+        3: lambda: _show_winner()
     }
 
     switch_case.get(winner)()
