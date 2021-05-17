@@ -17,11 +17,37 @@ def ask_to_continue(message):
         return False
 
 
-def print_framed_message(messages, width):
-    if not isinstance(messages, tuple):
-        raise ValueError('Favor de envolver tu mensaje en una tupla')
+def print_framed_message(messages, width, alignment='center', padding=0):
+    if not (isinstance(messages, list) or isinstance(messages, str)):
+        raise ValueError('Favor de enviar solo Strings o un Tuple con Strings')
+
+    for message in messages:
+        if not isinstance(message, str):
+            raise ValueError('Favor de enviar solo Strings o un Tuple con Strings')
 
     print('+' + '-' * (width - 2) + '+')
-    for message in messages:
-        print('|' + message.center(width - 2, ' ') + '|')
+    if isinstance(messages, str):
+        print('|' + align_message(messages, width, alignment, padding) + '|')
+    else:
+        for message in messages:
+            print('|' + align_message(message, width, alignment, padding) + '|')
     print('+' + '-' * (width - 2) + '+')
+
+
+def align_message(message, width, alignment, padding):
+    if alignment == 'center':
+        return message.center(width - 2, ' ')
+    if alignment == 'left':
+        return ' ' * padding + message.ljust(width - (2 + padding), ' ')
+    if alignment == 'right':
+        return message.rjust(width - (2 + padding), ' ') + ' ' * padding
+    return message
+
+
+def ask_for_option(message, max_options):
+    while True:
+        option = input(f'¿{message}? ')
+        if option.isnumeric() and 0 <= int(option) <= max_options:
+            return int(option)
+        else:
+            print('El valor no es válido, ingrese un número por favor')

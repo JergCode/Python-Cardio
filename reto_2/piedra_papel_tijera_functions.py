@@ -1,5 +1,5 @@
 import random
-from helpers.print_screen import print_framed_message
+from helpers.print_screen import print_framed_message, ask_for_option
 from options import OPTIONS, parse_option
 
 
@@ -69,15 +69,6 @@ def _print_winner_of_game(winning_option, player_1_won, against_computer):
         3: f'\nTIJERA ({winner}) corta a PAPEL({loser})\n',
     })
     print(messages.get(option))
-
-
-def ask_for_option(message, max_options):
-    while True:
-        option = input(f'¿{message}? ')
-        if option.isnumeric() and 0 <= int(option) <= max_options:
-            return int(option)
-        else:
-            print('El valor no es válido, ingrese un número por favor')
 
 
 def ask_for_players_option(against_computer):
